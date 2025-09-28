@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: postgres:17.6
+    environment:
+      POSTGRES_DB: "postsdb"
+      POSTGRES_USER: "adminpguser"
+      POSTGRES_PASSWORD: "pgpwd4vktesttask"
+    ports:
+      - "5433:5432"
