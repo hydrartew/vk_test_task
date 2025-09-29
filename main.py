@@ -3,7 +3,6 @@ import time
 
 import schedule
 
-from api import get_posts_data
 from config_reader import settings
 from scripts import create_db_tables_if_not_exists, fill_raw_users_by_posts, fill_top_users_by_posts
 
