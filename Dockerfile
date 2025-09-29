@@ -1,15 +1,14 @@
-FROM ubuntu:latest
+FROM python:3.12
 
-RUN apt-get update && apt-get install -y cron
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Копируем скрипт
-COPY myscript.sh myscript.sh
-RUN chmod +x myscript.sh
+COPY requirements.txt .
+RUN pip install --upgrade pip  \
+    && pip install -r requirements.txt
 
-# Копируем crontab
-COPY crontab /etc/cron.d/mycron
-RUN chmod 0644 /etc/cron.d/mycron
-RUN echo "" >> /etc/cron.d/mycron
+WORKDIR /app
 
-# Запускаем cron
-CMD cron && tail -f /var/log/syslog
+COPY . .
+
+CMD ["python", "-m", "main"]

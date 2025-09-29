@@ -3,8 +3,8 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from config_reader import settings
 
-db_host = "localhost"
-db_port = 5433
+db_host = settings.POSTGRES_HOST
+db_port = settings.POSTGRES_PORT
 db_name = settings.POSTGRES_DB
 db_user = settings.POSTGRES_USER
 db_password = settings.POSTGRES_PASSWORD.get_secret_value()
