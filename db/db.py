@@ -3,10 +3,10 @@ import logging
 from sqlalchemy import select, func, column
 from sqlalchemy.dialects.postgresql import insert
 
-from vk_test_task.db.base import engine, Base, session_factory
-from vk_test_task.db.models import RawPostsTable, TopUsersTable
-from vk_test_task.retry_settings import custom_retry
-from vk_test_task.schemas import Post, ListPosts
+from db.base import engine, Base, session_factory
+from db.models import RawPostsTable, TopUsersTable
+from retry_settings import custom_retry
+from schemas import Post, ListPosts
 
 logger = logging.getLogger(__name__)
 

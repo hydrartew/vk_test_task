@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, DateTime, func
 from sqlalchemy import String, Text
 
-from vk_test_task.db.base import Base
+from db.base import Base
 
 
 class RawPostsTable(Base):

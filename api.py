@@ -3,8 +3,8 @@ import logging
 import requests
 
 from config_reader import settings
-from vk_test_task.retry_settings import custom_retry
-from vk_test_task.schemas import ListPosts
+from retry_settings import custom_retry
+from schemas import ListPosts
 
 logger = logging.getLogger(__name__)
 
