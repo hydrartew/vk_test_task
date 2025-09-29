@@ -20,7 +20,7 @@ services:
         volumes:
             - logs:/app/logs
         depends_on:
-            postgres:
+            db:
                 condition: service_healthy
 
 volumes:
