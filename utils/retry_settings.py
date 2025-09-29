@@ -5,7 +5,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential, before_sleep_l
 logger = logging.getLogger(__name__)
 
 
-def custom_retry():
+def retry_settings():
     return retry(
         stop=stop_after_attempt(5),
         wait=wait_exponential(min=1, max=4),

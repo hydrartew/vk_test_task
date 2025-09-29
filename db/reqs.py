@@ -5,8 +5,8 @@ from sqlalchemy.dialects.postgresql import insert
 
 from db.base import engine, Base, session_factory
 from db.models import RawPostsTable, TopUsersTable
-from retry_settings import custom_retry
 from schemas import Post, ListPosts
+from utils import retry_settings
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def recreate_database() -> None:
         logger.info('Database tables recreated successfully.')
 
 
-@custom_retry()
+@retry_settings()
 def add_posts(list_posts: list[Post] | ListPosts) -> None:
     logger.info(f'Attempting to add/update {len(list_posts)} posts.')
 
@@ -55,7 +55,7 @@ def add_posts(list_posts: list[Post] | ListPosts) -> None:
         raise
 
 
-@custom_retry()
+@retry_settings()
 def collect_top_users() -> None:
     logger.info('Calculating top users by posts.')
 

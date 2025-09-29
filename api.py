@@ -3,13 +3,13 @@ import logging
 import requests
 
 from config_reader import settings
-from retry_settings import custom_retry
 from schemas import ListPosts
+from utils import retry_settings
 
 logger = logging.getLogger(__name__)
 
 
-@custom_retry()
+@retry_settings()
 def get_raw_posts() -> ListPosts:
     logger.info(f'Attempting to get raw posts from the url API {settings.POSTS_URL_API}.')
 
