@@ -5,7 +5,7 @@ from vk_test_task.db.base import Base
 
 
 class RawPostsTable(Base):
-    __tablename__ = "raw_users_by_posts"
+    __tablename__ = 'raw_users_by_posts'
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, nullable=False)
@@ -14,7 +14,7 @@ class RawPostsTable(Base):
 
 
 class TopUsersTable(Base):
-    __tablename__ = "top_users_by_posts"
+    __tablename__ = 'top_users_by_posts'
 
     user_id = Column(Integer, primary_key=True)
     posts_cnt = Column(Integer, nullable=False)
