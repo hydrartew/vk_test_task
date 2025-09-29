@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=f'{BASE_DIR}/.env', extra='allow')
 
     POSTS_URL_API: str | None = 'https://jsonplaceholder.typicode.com/posts'
-    CRON_FREQ_IN_HOURS: int | None = 1
+    CRON_FREQ_IN_SEC: int | None = 10
 
     POSTGRES_DB: str
     POSTGRES_USER: str

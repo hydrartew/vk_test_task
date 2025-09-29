@@ -1,24 +1,36 @@
 import logging.config
+import time
 
-from api import get_raw_posts
-from db import recreate_database, add_posts, collect_top_users
+import schedule
+
+from api import get_posts_data
+from config_reader import settings
+from scripts import create_db_tables_if_not_exists, fill_raw_users_by_posts, fill_top_users_by_posts
 
 logger = logging.getLogger(__name__)
 logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
 logging.getLogger('sqlalchemy.engine').propagate = False
 
 
+def launch_scripts():
+    logger.info('Launch scripts.')
+
+    list_posts = get_posts_data()
+    fill_raw_users_by_posts(list_posts)
+
+    fill_top_users_by_posts()
+
+    logger.info('End scripts.')
+
+
 def main():
-    logger.info('Launch script.')
+    create_db_tables_if_not_exists()
 
-    recreate_database()
+    schedule.every(settings.CRON_FREQ_IN_SEC).seconds.do(launch_scripts)
 
-    list_posts = get_raw_posts()
-    add_posts(list_posts)
-
-    collect_top_users()
-
-    logger.info('End script.')
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
 if __name__ == '__main__':

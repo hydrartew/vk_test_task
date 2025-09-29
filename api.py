@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 @retry_settings()
-def get_raw_posts() -> ListPosts:
+def get_posts_data() -> ListPosts:
     logger.info(f'Attempting to get raw posts from the url API {settings.POSTS_URL_API}.')
 
     response = requests.get(settings.POSTS_URL_API)
