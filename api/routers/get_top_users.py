@@ -29,7 +29,15 @@ router = APIRouter()
             })
 def get_top_users() -> JSONResponse:
     try:
-        top_users = get_all_top_users()
-        return JSONResponse(top_users, status_code=status.HTTP_200_OK)
+        top_users_sqlalchemy = get_all_top_users()
+        top_users_dict = [
+            {
+                "user_id": user.user_id,
+                "posts_cnt": user.posts_cnt,
+                "calculated_at": user.calculated_at.isoformat(),
+            }
+            for user in top_users_sqlalchemy
+        ]
+        return JSONResponse(top_users_dict, status_code=status.HTTP_200_OK)
     except Exception as e:
-        return JSONResponse(e, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return JSONResponse({"error": str(e)}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)

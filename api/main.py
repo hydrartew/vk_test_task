@@ -1,7 +1,12 @@
+import logging.config
 import uvicorn
 from fastapi import FastAPI
 
 from api.routers import get_top_users
+
+logger = logging.getLogger(__name__)
+logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
+logging.getLogger('sqlalchemy.engine').propagate = False
 
 
 app = FastAPI(
