@@ -11,14 +11,29 @@ services:
     etl:
         build:
             context: .
+            dockerfile: Dockerfile_etl
         env_file:
             - .env
-        container_name: vk-test-task
-        image: app/vk-test-task:latest
+        container_name: vk-test-task-etl
+        image: app/vk-test-task-etl:latest
         restart: "always"
         stop_signal: SIGINT
         volumes:
             - logs:/app/logs
+        depends_on:
+            db:
+                condition: service_healthy
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile_api
+        env_file:
+            - .env
+        container_name: vk-test-task-api
+        image: app/vk-test-task-api:latest
+        restart: "always"
+        ports:
+            - "8000:8000"
         depends_on:
             db:
                 condition: service_healthy

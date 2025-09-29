@@ -102,3 +102,25 @@ def collect_top_users() -> None:
             logger.info('Rollback add_posts session.')
             session.rollback()
         raise
+
+
+@retry_settings()
+def get_all_top_users() -> list[TopUsersTable]:
+    logger.info('Fetching all top users from the database.')
+
+    try:
+        with session_factory() as session:
+            stmt = select(TopUsersTable)
+            result = session.execute(stmt)
+            top_users = result.scalars().all()
+
+            logger.info(f'Successfully fetched {len(top_users)} top users.')
+
+            return list(top_users)
+
+    except Exception as e:
+        logger.error(f'Error fetching top users: {e}. Traceback below in the log.')
+        if 'session' in locals() and session:
+            logger.info('Rollback get_all_top_users session (if applicable).')
+            session.rollback()
+        raise
