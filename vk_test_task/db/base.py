@@ -1,6 +1,4 @@
-from typing import Annotated
-
-from sqlalchemy import MetaData, create_engine, String
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
 from config_reader import settings
@@ -15,7 +13,7 @@ db_url = f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db
 
 engine = create_engine(
     db_url,
-    echo=True,
+    echo=settings.SQLALCHEMY_ECHO_FLAG,
     isolation_level="REPEATABLE READ"
 )
 

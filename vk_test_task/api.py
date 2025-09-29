@@ -1,18 +1,15 @@
 import logging
+
 import requests
-from tenacity import retry, stop_after_attempt, wait_exponential, before_sleep_log, RetryError
 
 from config_reader import settings
+from vk_test_task.retry_settings import custom_retry
 from vk_test_task.schemas import ListPosts
 
 logger = logging.getLogger(__name__)
 
 
-@retry(
-    stop=stop_after_attempt(5),
-    wait=wait_exponential(min=1, max=4),
-    before_sleep=before_sleep_log(logger, logging.INFO, exc_info=True)
-)
+@custom_retry()
 def get_raw_posts() -> ListPosts:
     logger.info(f'Attempting to get raw posts from the url API {settings.POSTS_URL_API}.')
 
@@ -24,6 +21,6 @@ def get_raw_posts() -> ListPosts:
 
     _data = ListPosts.model_validate(response_json)
 
-    logger.info('Successfully get and validated posts.')
+    logger.info('Posts received and validated successfully.')
 
     return _data

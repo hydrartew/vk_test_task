@@ -9,12 +9,14 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=f'{BASE_DIR}/.env', extra='allow')
 
-    POSTS_URL_API: str
-    CRON_FREQ_IN_HOURS: int
+    POSTS_URL_API: str | None = 'https://jsonplaceholder.typicode.com/posts'
+    CRON_FREQ_IN_HOURS: int | None = 1
 
     POSTGRES_DB: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: SecretStr
+
+    SQLALCHEMY_ECHO_FLAG: bool = False
 
 
 settings = Settings()

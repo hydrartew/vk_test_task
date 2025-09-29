@@ -1,13 +1,12 @@
 import logging
 
-import psycopg2
+from sqlalchemy import select, func, column
 from sqlalchemy.dialects.postgresql import insert
 
 from vk_test_task.db.base import engine, Base, session_factory
-from vk_test_task.db.models import RawPostsTable, TopUsersTable  # для создания таблицы
+from vk_test_task.db.models import RawPostsTable, TopUsersTable
+from vk_test_task.retry_settings import custom_retry
 from vk_test_task.schemas import Post, ListPosts
-
-from tenacity import retry, stop_after_attempt, wait_exponential, before_sleep_log, RetryError
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +22,7 @@ def recreate_database() -> None:
         logger.info('Database tables recreated successfully.')
 
 
-@retry(
-    stop=stop_after_attempt(5),
-    wait=wait_exponential(min=1, max=4),
-    before_sleep=before_sleep_log(logger, logging.INFO, exc_info=True)
-)
+@custom_retry()
 def add_posts(list_posts: list[Post] | ListPosts) -> None:
     logger.info(f'Attempting to add/update {len(list_posts)} posts.')
 
@@ -35,15 +30,15 @@ def add_posts(list_posts: list[Post] | ListPosts) -> None:
 
         with session_factory() as session:
             for p in list_posts:
-                insert_stmt = insert(RawPostsTable).values(
+                stmt = insert(RawPostsTable).values(
                     id=p.id,
                     user_id=p.user_id,
                     title=p.title,
                     body=p.body
                 )
 
-                do_update_stmt = insert_stmt.on_conflict_do_update(
-                    index_elements=['id'],
+                do_update_stmt = stmt.on_conflict_do_update(
+                    index_elements=[RawPostsTable.id],
                     set_=dict(title=p.title, body=p.body)
                 )
 
@@ -53,7 +48,51 @@ def add_posts(list_posts: list[Post] | ListPosts) -> None:
             logger.info(f'Posts were added/updated successfully.')
 
     except Exception:
-        logger.error(f'Error adding posts. Traceback below in the log.')
+        logger.error('Error adding posts. Traceback below in the log.')
+        if session:
+            logger.info('Rollback add_posts session.')
+            session.rollback()
+        raise
+
+
+@custom_retry()
+def collect_top_users() -> None:
+    logger.info('Calculating top users by posts.')
+
+    try:
+        with session_factory() as session:
+            subquery = (
+                select(
+                    RawPostsTable.user_id,
+                    func.count().label('posts_cnt')
+                )
+                .group_by(RawPostsTable.user_id)
+                .order_by(column('posts_cnt').desc(), column('user_id'))
+            )
+
+            stmt = insert(TopUsersTable).from_select(
+                ['user_id', 'posts_cnt'],
+                select(
+                    subquery.c.user_id,
+                    subquery.c.posts_cnt
+                )
+            )
+
+            do_update_stmt = stmt.on_conflict_do_update(
+                index_elements=[TopUsersTable.user_id],
+                set_=dict(
+                    posts_cnt=stmt.excluded.posts_cnt,
+                    calculated_at=func.now()
+                )
+            )
+
+            session.execute(do_update_stmt)
+
+            session.commit()
+            logger.info('Top users calculated and updated successfully.')
+
+    except Exception:
+        logger.error('Error calculating top users. Traceback below in the log.')
         if session:
             logger.info('Rollback add_posts session.')
             session.rollback()
