@@ -2,13 +2,30 @@ import logging.config
 import time
 
 import schedule
+import uvicorn
+from fastapi import FastAPI
 
+from api.routers import get_top_users
 from config_reader import settings
-from scripts import create_db_tables_if_not_exists, fill_raw_users_by_posts, fill_top_users_by_posts
+from db import create_db_tables_if_not_exists
+from scripts import fill_raw_users_by_posts, fill_top_users_by_posts
 
 logger = logging.getLogger(__name__)
 logging.config.fileConfig('logging.ini', disable_existing_loggers=False)
 logging.getLogger('sqlalchemy.engine').propagate = False
+
+
+app = FastAPI(
+    title='API for VK test task',
+    version='v1',
+    openapi_url='/vk-test-task.json'
+)
+
+app.include_router(get_top_users.router)
+
+
+def api():
+    uvicorn.run("main:app", reload=True)
 
 
 def launch_scripts():
@@ -20,7 +37,7 @@ def launch_scripts():
     logger.info('End scripts.')
 
 
-def main():
+def cron_scripts():
     create_db_tables_if_not_exists()
 
     schedule.every(settings.CRON_FREQ_IN_SEC).seconds.do(launch_scripts)
@@ -28,6 +45,11 @@ def main():
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+
+def main():
+    # api()
+    cron_scripts()
 
 
 if __name__ == '__main__':
