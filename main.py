@@ -9,12 +9,16 @@ logging.getLogger('sqlalchemy.engine').propagate = False
 
 
 def main():
-    # recreate_database()
+    logger.info('Launch script.')
+
+    recreate_database()
 
     list_posts = get_raw_posts()
     add_posts(list_posts)
 
     collect_top_users()
+
+    logger.info('End script.')
 
 
 if __name__ == '__main__':

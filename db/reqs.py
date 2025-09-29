@@ -11,15 +11,20 @@ from utils import retry_settings
 logger = logging.getLogger(__name__)
 
 
-def recreate_database() -> None:
-    logger.info('Attempting to drop all tables, if they exist, and create new ones.')
+def recreate_database(drop_all: bool = False) -> None:
     try:
-        Base.metadata.drop_all(engine)
+
+        if drop_all:
+            logger.info('Attempting to drop all tables, if they exist.')
+            Base.metadata.drop_all(engine)
+            logger.info('Database tables dropped successfully.')
+
+        logger.info('Creating new tables if not exists.')
         Base.metadata.create_all(engine)
+        logger.info('Tables already exist or created successfully.')
+
     except Exception as e:
         logger.error(f'Error dropping or/and creating database tables: {e}')
-    else:
-        logger.info('Database tables recreated successfully.')
 
 
 @retry_settings()

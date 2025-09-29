@@ -21,3 +21,6 @@ class ListPosts(RootModel):
 
     def __len__(self):
         return len(self.root)
+
+    def append(self, post: Post) -> None:
+        self.root.append(post)
