@@ -12,5 +12,9 @@ class Settings(BaseSettings):
     POSTS_URL_API: str
     CRON_FREQ_IN_HOURS: int
 
+    POSTGRES_DB: str
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: SecretStr
+
 
 settings = Settings()
