@@ -1,9 +1,27 @@
 services:
-  postgres:
-    image: postgres:17.6
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    ports:
-      - "5433:5432"
+    postgres:
+        image: postgres:17.6
+        env_file:
+            - .env
+        healthcheck:
+            test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+            interval: 10s
+            timeout: 3s
+            retries: 3
+    app:
+        build:
+            context: .
+        env_file:
+            - .env
+        container_name: vk-test-task
+        image: app/vk-test-task:latest
+        restart: "always"
+        stop_signal: SIGINT
+        volumes:
+            - logs:/app/logs
+        depends_on:
+            postgres:
+                condition: service_healthy
+
+volumes:
+    logs:

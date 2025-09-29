@@ -15,9 +15,7 @@ logging.getLogger('sqlalchemy.engine').propagate = False
 def launch_scripts():
     logger.info('Launch scripts.')
 
-    list_posts = get_posts_data()
-    fill_raw_users_by_posts(list_posts)
-
+    fill_raw_users_by_posts()
     fill_top_users_by_posts()
 
     logger.info('End scripts.')
