@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     POSTS_URL_API: str | None = 'https://jsonplaceholder.typicode.com/posts'
     CRON_FREQ_IN_SEC: int | None = 10
 
-    POSTGRES_HOST: str | None = 'localhost'
-    POSTGRES_PORT: int | None = 5432
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
     POSTGRES_DB: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: SecretStr
