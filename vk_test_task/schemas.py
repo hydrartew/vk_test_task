@@ -10,7 +10,7 @@ class Post(BaseModel):
     body: str
 
 
-class PostList(RootModel):
+class ListPosts(RootModel):
     root: list[Post]
 
     def __iter__(self):

@@ -1,1 +1,1 @@
-from .db import recreate_database
+from .db import recreate_database, add_posts
